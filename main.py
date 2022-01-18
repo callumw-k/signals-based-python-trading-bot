@@ -16,11 +16,6 @@ def getMessageData():
     return data
 
 
-def getPrecision(symbol):
-    return client.get_symbol_info(symbol=symbol)['baseAssetPrecision']
-
-
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     # api_key = os.environ['API_KEY']
     # api_secret = os.environ['API_SECRET']
@@ -40,36 +35,40 @@ if __name__ == '__main__':
 
         # Get the message title and the message body
         # print(newest_message)
-        message_id = newest_message['id']
-        if prev_message != '' and message_id == prev_message['id']:
+        newest_message_id = newest_message['id']
+        prev_message_exists = True if prev_message != '' else False
+        if prev_message_exists and newest_message_id == prev_message['id']:
             print("No change")
-        elif prev_message != '' and int(prev_message['id']) + 1 == int(message_id):
+        elif prev_message_exists and int(prev_message['id']) + 1 == int(newest_message_id):
+            print("One message")
             messages.append(newest_message)
-        elif prev_message != '' and int(message_id) - int(prev_message['id']) > 1:
-            missed_amount = int(message_id) - int(prev_message['id'])
-            print(missed_amount)
+        elif prev_message_exists and int(newest_message_id) - int(prev_message['id']) > 1:
+            missed_amount = int(newest_message_id) - int(prev_message['id'])
             missed_messages = message_data[-missed_amount:]
-            print(missed_messages)
             messages = missed_messages
+            print(f'Missed ${missed_amount}. Messages are : ${messages}')
 
-        print(messages)
         for message in messages:
             # Checking for new Signal
             message_title = getMessageTitle(message)
             message_body = getMessageBody(message)
+
+            # Check if message contains token.
             coin_alert = checkIfTokenExists(message_title)
-            messaged_changed = checkIfChange(prev_message, newest_message)
+
+            # Check if new signal
             new_signal = isNewSignal(message_body)
 
             # Checking for target one
             target_one = isTargetOne(message_body)
+
+            # Check for target two
+
             # Checking if the signal is closed
             signal_closed = isSignalClose(message_body)
 
-            if coin_alert and messaged_changed:
+            if coin_alert:
                 coin = Token(getToken(message_title), getSymbol(message_title), client=client)
-                print(coin.nominal_value, coin.step_size, coin.token_balance)
-
                 if new_signal and coin.nominal_value < 10:
                     quantity = getBuyQuantity(client, coin)
                     new_order = placeOrder(client, coin.symbol, quantity, Client)
@@ -83,7 +82,7 @@ if __name__ == '__main__':
                     new_order = placeSellOrder(client, coin.symbol, quantity, Client)
                     print(new_order)
                 else:
-                    print("Order Route, waiting")
+                    print("No Orders placed, waiting")
             else:
                 print("Waiting")
         prev_message = newest_message
