@@ -12,6 +12,15 @@ def placeOrder(client, symbol, quantity, Client):
         return order
 
 
+def placeLimitOrder(client, token, quantity):
+    try:
+        order = client.order_limit_sell(symbol=token.symbol, quantity=quantity, price='')
+    except binance.exceptions.BinanceAPIException as e:
+        print(f'Status Code = {e.status_code} and Error = {e.message}')
+    else:
+        return order
+
+
 def placeSellOrder(client, symbol, quantity, Client):
     try:
         order = client.create_order(symbol=symbol, side=Client.SIDE_SELL, type=Client.ORDER_TYPE_MARKET,
@@ -22,7 +31,7 @@ def placeSellOrder(client, symbol, quantity, Client):
         return order
 
 
-def getHalfAssetBalance(client, coin):
+def getHalfAssetBalance(coin):
     token_amount = float(coin.token_balance) / 2
     return round_step_size(token_amount, coin.step_size)
 
@@ -33,11 +42,6 @@ def getTokenBalance(client, coin):
     return round_step_size(token_amount, coin.getStepSize()) - coin.getStepSize()
 
 
-def getBuyQuantity(client, coin):
-    # price_data = client.get_avg_price(symbol=coin.symbol)
-    # step_size = client.get_symbol_info(symbol)['filters'][2]['stepSize']
-    # step_size = float(step_size)
-
-    # price = float(price_data['price'])
-    quantity = 12 / coin.bidPrice
+def getBuyQuantity(coin):
+    quantity = 25 / coin.bidPrice
     return round_step_size(quantity, coin.step_size)

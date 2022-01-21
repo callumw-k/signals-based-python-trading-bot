@@ -17,10 +17,8 @@ def getMessageData():
 
 
 if __name__ == '__main__':
-    # api_key = os.environ['API_KEY']
-    # api_secret = os.environ['API_SECRET']
-    api_key = '***REMOVED***'
-    api_secret = '***REMOVED***'
+    api_key = os.environ['API_KEY']
+    api_secret = os.environ['API_SECRET']
     client = Client(api_key, api_secret)
     prev_message = ''
     while True:
@@ -70,11 +68,12 @@ if __name__ == '__main__':
             if coin_alert:
                 coin = Token(getToken(message_title), getSymbol(message_title), client=client)
                 if new_signal and coin.nominal_value < 10:
-                    quantity = getBuyQuantity(client, coin)
+                    quantity = getBuyQuantity(coin)
                     new_order = placeOrder(client, coin.symbol, quantity, Client)
+                    # set_limit_order=placeLimitOrder(client,coin,quantity)
                     print(new_order)
                 elif target_one:
-                    quantity = getHalfAssetBalance(client, coin)
+                    quantity = getHalfAssetBalance(coin)
                     new_order = placeSellOrder(client, coin.symbol, quantity, Client)
                     print(new_order)
                 elif signal_closed and coin.nominal_value > 10:
@@ -86,4 +85,4 @@ if __name__ == '__main__':
             else:
                 print("Waiting")
         prev_message = newest_message
-        sleep(30 - time() % 30)
+        sleep(60 - time() % 60)
