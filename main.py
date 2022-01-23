@@ -59,6 +59,8 @@ if __name__ == '__main__':
 
             # Checking for target one
             target_one = isTargetOne(message_body)
+            target_two = isTargetTwo(message_body)
+            target_three = isTargetThree(message_body)
 
             # Check for target two
 
@@ -68,16 +70,27 @@ if __name__ == '__main__':
             if coin_alert:
                 coin = Token(getToken(message_title), getSymbol(message_title), client=client)
                 if new_signal and coin.nominal_value < 10:
-                    quantity = getBuyQuantity(coin)
-                    new_order = placeOrder(client, coin.symbol, quantity, Client)
-                    # set_limit_order=placeLimitOrder(client,coin,quantity)
-                    print(new_order)
+                    quantity = getNewOrderQuantity(coin)
+                    new_order = placeOrder(client, coin, quantity, Client)
+                    # Set the limit order
+                    coin.updateTokenBalance()
+                    limit_quantity = getRoundedQuantity(coin)
+                    limit_order = placeLimitOrder(client, coin, limit_quantity, Client)
+                    print(new_order, limit_order)
                 elif target_one:
+                    cancelAllOrders(client, coin)
+                    print(coin.token_balance)
+                    quantity = getFirstSellAmount(coin)
+                    new_order = placeSellOrder(client, coin.symbol, quantity, Client)
+                    print(new_order)
+                elif target_two:
+                    cancelAllOrders(client, coin)
                     quantity = getHalfAssetBalance(coin)
                     new_order = placeSellOrder(client, coin.symbol, quantity, Client)
                     print(new_order)
-                elif signal_closed and coin.nominal_value > 10:
-                    quantity = round_step_size(coin.token_balance - coin.step_size, coin.step_size)
+                elif signal_closed or target_three and coin.nominal_value > 10:
+                    cancelAllOrders(client, coin)
+                    quantity = getRoundedQuantity(coin)
                     new_order = placeSellOrder(client, coin.symbol, quantity, Client)
                     print(new_order)
                 else:
@@ -85,4 +98,4 @@ if __name__ == '__main__':
             else:
                 print("Waiting")
         prev_message = newest_message
-        sleep(60 - time() % 60)
+        sleep(10 - time() % 10)

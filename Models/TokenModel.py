@@ -7,3 +7,7 @@ class Token:
         self.token_balance = float(self.client.get_asset_balance(asset=self.token_name)['free'])
         self.nominal_value = self.token_balance * self.bidPrice
         self.step_size = float(self.client.get_symbol_info(self.symbol)['filters'][2]['stepSize'])
+        self.tick_size = float(self.client.get_symbol_info(self.symbol)['filters'][0]['tickSize'])
+
+    def updateTokenBalance(self):
+        self.token_balance = float(self.client.get_asset_balance(asset=self.token_name)['free'])

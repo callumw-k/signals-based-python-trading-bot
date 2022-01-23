@@ -41,6 +41,24 @@ def isTargetOne(body):
         return True
 
 
+def isTargetTwo(body):
+    try:
+        body.index("Target 2 done")
+    except ValueError:
+        return False
+    else:
+        return True
+
+
+def isTargetThree(body):
+    try:
+        body.index("Target 3 done")
+    except ValueError:
+        return False
+    else:
+        return True
+
+
 def getSymbol(title):
     symbol = title[title.index("$") + 1:]
     return symbol
