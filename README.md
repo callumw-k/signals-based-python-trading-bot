@@ -1,2 +1,2 @@
 # signals-python-binance
-This is a python script that runs every minute inside a Docker container. There are probably more efficient ways to do this, potentially using Websockets, but crypto exchanges have excellent API support and documentation.
+This script runs every minute inside of a Docker container. It makes a call to my API and checks if there are any new signals available. It'll then run a series of checks and perform trades dependent on the signals received.
