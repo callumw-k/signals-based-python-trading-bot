@@ -16,7 +16,7 @@ def placeOrder(client, coin, quantity, Client):
 
 
 def placeLimitOrder(client, coin, quantity, Client):
-    stop_price = round_step_size(coin.bidPrice * 0.93, coin.tick_size)
+    stop_price = round_step_size(coin.bidPrice * 0.92, coin.tick_size)
     try:
         order = client.create_order(symbol=coin.symbol, side=Client.SIDE_SELL, type=Client.ORDER_TYPE_STOP_LOSS_LIMIT,
                                     timeInForce=Client.TIME_IN_FORCE_GTC, quantity=quantity,
