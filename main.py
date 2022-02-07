@@ -88,7 +88,7 @@ if __name__ == '__main__':
                     quantity = getHalfAssetBalance(coin)
                     new_order = placeSellOrder(client, coin.symbol, quantity, Client)
                     print(new_order)
-                elif signal_closed or target_three and coin.nominal_value > 10:
+                elif (signal_closed or target_three) and coin.nominal_value > 10:
                     cancelAllOrders(client, coin)
                     quantity = getRoundedQuantity(coin)
                     new_order = placeSellOrder(client, coin.symbol, quantity, Client)
@@ -98,4 +98,4 @@ if __name__ == '__main__':
             else:
                 print("Waiting")
         prev_message = newest_message
-        sleep(10 - time() % 10)
+        sleep(60 - time() % 60)
